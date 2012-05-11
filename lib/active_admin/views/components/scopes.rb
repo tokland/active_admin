@@ -17,10 +17,8 @@ module ActiveAdmin
       end
 
       def build(scopes, options = {})
-        unless current_filter_search_empty?
-          scopes.each do |scope|
-            build_scope(scope, options) if call_method_or_proc_on(self, scope.display_if_block)
-          end
+        scopes.each do |scope|
+          build_scope(scope, options) if call_method_or_proc_on(self, scope.display_if_block)
         end
       end
 
@@ -62,13 +60,14 @@ module ActiveAdmin
       end
 
       # Return the count for the scope passed in.
-      def get_scope_count(scope)
-        if params[:q]
-          search(scope_chain(scope, scoping_class)).relation.count
-        else 
-          scope_chain(scope, scoping_class).count
-        end
-      end
+       def get_scope_count(scope)
+        scope_root = scope_chain(scope, scoping_class)
+        if (q = params[:q]) && q.is_a?(Hash)
+          scope_root.search(q.reject { |k, v| v.blank? })
+         else 
+          scope_root
+        end.count
+       end
 
       def scoping_class
         assigns["before_scope_collection"] || active_admin_config.resource_class
