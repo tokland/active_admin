@@ -42,6 +42,33 @@ describe ActiveAdmin::ResourceController::Collection do
       controller.send :scope_current_collection, chain
       controller.instance_variable_get('@before_scope_collection').should == scoped_collection
     end
+    
+    describe "#current_scope" do
+      context "with unset param scope" do 
+        let(:params) { {} }
+        it "should get default scope" do
+          controller.stub_chain(:active_admin_config, :default_scope).and_return(:my_scope)
+          controller.send(:current_scope).should == :my_scope
+        end
+      end
+
+      context "with empty param scope" do 
+        let(:params) { {:scope => ""} }
+        it "should get default scope" do
+          controller.stub_chain(:active_admin_config, :default_scope).and_return(:my_scope)
+          controller.send(:current_scope).should == :my_scope
+        end
+      end
+
+      context "with non-empty param scope" do 
+        let(:params) { {:scope => "some_scope"} }
+        it "should get scope by identifier" do
+          controller.stub_chain(:active_admin_config, :get_scope_by_id).
+            with("some_scope").and_return(:some_scope)
+          controller.send(:current_scope).should == :some_scope
+        end
+      end
+    end
   end
 
 end
