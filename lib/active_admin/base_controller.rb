@@ -11,6 +11,7 @@ module ActiveAdmin
 
     before_filter :only_render_implemented_actions
     before_filter :authenticate_active_admin_user
+    before_filter :set_per_page, :only => :index
 
     class << self
       # Ensure that this method is available for the DSL
@@ -57,5 +58,10 @@ module ActiveAdmin
     end
     helper_method :active_admin_namespace
 
+    def set_per_page
+      default = ActiveAdmin.application.default_per_page
+      key = :"per_page_#{params[:controller]}"
+      @per_page = session[key] = (params[:per_page] || session[key] || default).to_i
+    end    
   end
 end

@@ -30,6 +30,9 @@ module ActiveAdmin
     # The default number of resources to display on index pages
     inheritable_setting :default_per_page, 30
 
+    # The default available number of resources to display on index pages
+    inheritable_setting :default_per_pages, [15, 30, 50, 100]
+
     # The title which gets displayed in the main layout
     inheritable_setting :site_title, ""
 

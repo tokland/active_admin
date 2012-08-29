@@ -62,9 +62,23 @@ module ActiveAdmin
 
       def build_pagination_with_formats(options)
         div :id => "index_footer" do
+          build_pagination_size
           build_pagination
           div(page_entries_info(options).html_safe, :class => "pagination_information")
           build_download_format_links unless @download_links == false
+        end
+      end
+
+      def build_pagination_size
+        div :id => "per_page", :class => "pagination" do
+          default_per_pages = ActiveAdmin.application.default_per_pages
+          current_per_page = self.controller.instance_variable_get("@per_page")
+          safe_join(default_per_pages.map do |per_page|
+            is_current = current_per_page.to_i == per_page
+            span(:class => ["page", ("current" if is_current)].compact.join(" ")) do
+              link_to_unless(is_current, per_page, params.merge(:per_page => per_page))
+            end
+          end)
         end
       end
 
